@@ -36,6 +36,21 @@ const server = http.createServer(async (req, res) => {
           }
       break;
     case 'PUT':
+        try {
+            await fs.access(filePath);
+            sendResponse(res, 200, 'text/plain', 'Image already exists in cache');
+          } catch (error) {
+            // Якщо файл не існує, отримуємо зображення з http.cat
+            try {
+              const response = await superagent.get(`https://http.cat/${code}`);
+              const imageBuffer = response.body; // Отримуємо зображення
+              await fs.writeFile(filePath, imageBuffer); // Зберігаємо зображення у кеш
+              sendResponse(res, 201, 'text/plain', 'Image saved successfully');
+            } catch (error) {
+              sendResponse(res, 404, 'text/plain', '404 Not Found');
+            }
+          }
+          break;
     case 'DELETE':
   }
 });
