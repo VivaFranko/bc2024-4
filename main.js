@@ -52,6 +52,16 @@ const server = http.createServer(async (req, res) => {
           }
           break;
     case 'DELETE':
+        try {
+            await fs.unlink(filePath); // Видаляємо файл з кешу
+            sendResponse(res, 200, 'text/plain', 'Image deleted successfully');
+          } catch (error) {
+            sendResponse(res, 404, 'text/plain', '404 File not found');
+          }
+          break;
+        default:
+          sendResponse(res, 405, 'text/plain', '405 Method Not Allowed');
+          break;
   }
 });
 server.listen(port, host, () => {
